@@ -1,11 +1,13 @@
-﻿## Decision and Reasoning
+# Explainability Contract: CloudMedic
 
-CloudMedic makes an assessment by analyzing evidence related to cloud configuration. It connects detected problems to supporting evidence and practical actions.
+## Decision
 
-## Inputs and Data Sources
+CloudMedic decides whether recognizable infrastructure-as-code evidence exists for cloud deployment. When no Terraform or CloudFormation-style artifact is detected, it reports the structural gap.
 
-CloudMedic uses source files, configuration, project structure, and relevant cloud configuration data from the inspected project.
+## Inputs
 
-## Limits and Constraints
+It uses repository filenames and directory names as evidence, looking for terraform or cloudformation signals. The decision is deterministic and repository-scoped.
 
-CloudMedic is limited when required information is missing, inaccessible, generated dynamically, or incomplete.
+## Limits
+
+It does not assess cloud architecture, cost, IAM correctness, drift, or production readiness. Other infrastructure systems may be valid but remain outside the recognized evidence set.
