@@ -1,45 +1,133 @@
 # CloudMedic
 
-> Portable agent for identifying missing recognizable cloud infrastructure configuration.
+> A portable engineering agent for **cloud infrastructure hygiene**.
 
-## What it does
+CloudMedic inspects observable project evidence, detects **missing infrastructure configuration**, and produces an explainable improvement plan. Its purpose is not to replace specialist tooling. It provides a focused, auditable diagnostic layer that can travel across agent runtimes.
 
-CloudMedic looks for infrastructure-as-code evidence such as Terraform or CloudFormation and reports when no recognizable cloud configuration is present.
+## What makes it different
 
-### Diagnostic fingerprint
-
-**Infrastructure evidence → cloud-readiness signal → explanation → next step**
-
-## Why this agent is distinct
-
-CloudMedic is deliberately narrower than a general cloud security or architecture scanner. Its question is whether the repository exposes an inspectable infrastructure definition.
-
-That makes it useful as a discovery layer before deeper cloud analysis.
-
-## Workflow
+This project follows an **evidence → decision → explanation** model:
 
 ```text
-Repository
-    ↓
-IaC detector
-    ↓
-Cloud configuration rule
-    ↓
-Evidence-backed finding
-    ↓
-Infrastructure recommendation
+Project
+  ↓
+Scanner
+  ↓
+Domain Evidence
+  ↓
+Deterministic Diagnostic Rule
+  ↓
+Finding + Evidence + Confidence
+  ↓
+Improvement Plan
 ```
+
+The agent does not invent evidence. A finding is tied to what the scanner can actually observe.
+
+## Diagnostic contract
+
+| Layer | CloudMedic behavior |
+| --- | --- |
+| Domain | cloud infrastructure hygiene |
+| Primary signal | Terraform / CloudFormation artifacts |
+| Remediation | Add infrastructure configuration when applicable |
+| Output | Structured, explainable findings |
+| Uncertainty | Explicitly constrained by available evidence |
+
+## Portable architecture
+
+```text
+                    ┌─────────────────────┐
+                    │   Portable Agent    │
+                    │ identity + behavior  │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              ↓                ↓                ↓
+          Diagnostic        Duties &         Explainability
+            Logic           Workflow           Contract
+              │
+              ↓
+        Runtime Adapters
+       ┌──────┬──────┬──────┬──────┐
+       ↓      ↓      ↓      ↓
+    OpenAI  CrewAI  Claude  Lyzr
+```
+
+The core diagnostic logic is kept separate from framework-specific adapters. This is the central design idea of the project, not four copies of the same agent wearing different hats.
+
+## Repository structure
+
+```text
+agent.yaml          # Portable identity and passport metadata
+SOUL.md             # Identity, principles, and behavior
+AGENTS.md           # Agent responsibilities
+DUTIES.md           # Maker / Checker workflow
+EXPLAINABILITY.md   # Decision, inputs, limits, and evidence contract
+core/               # Shared result model
+tools/              # Scanner and domain diagnostics
+skills/             # Declared capabilities
+workflows/          # Agent workflows
+adapters/           # Runtime-facing adapters
+tests/              # Deliberately diagnostic project fixtures
+```
+
+## Passport portability
+
+The agent is structured for the OpenGAP passport model and can be exported to:
+
+- OpenAI Agents SDK
+- CrewAI
+- Claude Code
+- Lyzr
+
+The important part is the **portable contract**: identity, behavior, duties, explainability, tools, and skills remain defined independently of a single runtime.
 
 ## Verification
 
-The repository provides OpenGAP passport metadata, cloud-focused fixture coverage, explainability contracts, four framework adapters, and automated adapter verification.
+The repository includes:
 
-OpenGAP validation passed and all four generated exports have been exercised successfully.
+- Local adapter verification
+- A domain-specific broken-project fixture
+- OpenGAP-compatible passport metadata
+- Explainability requirements
+- Export verification across the supported targets
 
-## Design principle
+The engineering workflow is:
 
-**Infrastructure should be observable.** CloudMedic reports visible repository evidence and avoids inventing deployment architecture that is not present.
+```text
+Validate passport
+    → Verify adapters
+    → Run diagnostic fixture
+    → Export with OpenGAP
+    → Inspect generated artifacts
+```
 
-## Medic family
+## Scope and limitations
 
-CloudMedic adds a focused infrastructure perspective to the portable Medic family.
+CloudMedic is a focused diagnostic prototype. Its conclusions are limited to the evidence and rules implemented in this repository. It should complement, not replace, production-grade static analysis, security scanners, observability platforms, CI systems, or human review where appropriate.
+
+## Why this project exists
+
+This repository is one member of a deliberately modular **Medic agent family**. Each agent applies the same portable passport architecture to a different engineering failure surface.
+
+That makes the collection useful as an interoperability experiment:
+
+```text
+One passport architecture
+        +
+Different diagnostic domains
+        +
+Multiple agent runtimes
+        =
+Portable engineering-agent family
+```
+
+## Challenge context
+
+Built for the **HiDevs × Lyzr Agent Passport Challenge**, exploring portable agent identity, behavior contracts, explainability, verification, and framework interoperability.
+
+## Author
+
+**Jofil Joby**  
+[GitHub](https://github.com/Jofil-Joby)
